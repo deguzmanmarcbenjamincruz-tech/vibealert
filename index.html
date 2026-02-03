@@ -49,7 +49,6 @@
     .status {
       font-size: 1.4rem;
       font-weight: bold;
-      color: #16a34a;
     }
 
     .map-container {
@@ -105,7 +104,7 @@
       <div class="map-container">
         <iframe
           id="map"
-          src="https://www.google.com/maps?q=0,0&z=2&output=embed"
+          src="https://www.google.com/maps?q=14.572894,121.079714&z=17&output=embed"
           width="100%"
           height="100%"
           style="border:0;"
@@ -129,29 +128,7 @@
   <footer>
     © 2026 VibeAlert Monitoring System
   </footer>
-<script>
-  // Fake device data (testing only)
-  const data = {
-    timestamp: new Date().toLocaleString(),
-    magnitude: 4.6,
-    status: "WARNING"
-  };
 
-  // Update values
-  document.getElementById("timestamp").textContent = data.timestamp;
-  document.getElementById("magnitude").textContent = data.magnitude;
-  document.getElementById("vibrationStatus").textContent = data.status;
-
-  // Change color based on status
-  const statusEl = document.getElementById("vibrationStatus");
-
-  if (data.status === "NORMAL") {
-    statusEl.style.color = "#16a34a"; // green
-  } else if (data.status === "WARNING") {
-    statusEl.style.color = "#ca8a04"; // yellow
-  } else if (data.status === "DANGER") {
-    statusEl.style.color = "#dc2626"; // red
-  }
-</script>
+  <script src="index.js"></script>
 </body>
 </html>

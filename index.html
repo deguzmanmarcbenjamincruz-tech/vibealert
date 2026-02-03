@@ -2,41 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Device Monitoring Website</title>
+  <title>VibeAlert Device Monitoring</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e293b;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #1e293b;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+
+    .data-value {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .status {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #16a34a;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 350px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>Device Monitoring System</h1>
+  <header>
+    <h1>VibeAlert Device Monitoring System</h1>
+    <p>Real-time vibration monitoring dashboard</p>
+  </header>
 
-  <section>
-    <h2>About the Device</h2>
-    <p>Information about the device will be placed here.</p>
-  </section>
+  <main>
 
-  <section>
-    <h2>Timestamp</h2>
-    <p>--</p>
-  </section>
+    <section>
+      <h2>About the Device</h2>
+      <p>
+        VibeAlert is a vibration monitoring system designed to detect,
+        analyze, and report vibration activity in real time.
+      </p>
+    </section>
 
-  <section>
-    <h2>Magnitude</h2>
-    <p>--</p>
-  </section>
+    <section>
+      <h2>Timestamp</h2>
+      <p id="timestamp" class="data-value">--</p>
+    </section>
 
-  <section>
-    <h2>Vibration Status</h2>
-    <p>--</p>
-  </section>
+    <section>
+      <h2>Magnitude</h2>
+      <p id="magnitude" class="data-value">--</p>
+    </section>
 
-  <section>
-    <h2>Location</h2>
-    <p>Google Maps will be embedded here.</p>
-  </section>
+    <section>
+      <h2>Vibration Status</h2>
+      <p id="vibrationStatus" class="status">--</p>
+    </section>
 
-  <section>
-    <h2>Device Info / Purpose</h2>
-    <p>Description of the device purpose.</p>
-  </section>
+    <section>
+      <h2>Location</h2>
+      <div class="map-container">
+        <iframe
+          id="map"
+          src="https://www.google.com/maps?q=0,0&z=2&output=embed"
+          width="100%"
+          height="100%"
+          style="border:0;"
+          loading="lazy"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </section>
 
+    <section>
+      <h2>Device Info / Purpose</h2>
+      <p>
+        This device monitors vibration levels and sends alerts when
+        abnormal activity is detected. It is intended for safety,
+        monitoring, and early-warning applications.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    © 2026 VibeAlert Monitoring System
+  </footer>
+<script>
+  // Fake device data (testing only)
+  const data = {
+    timestamp: new Date().toLocaleString(),
+    magnitude: 4.6,
+    status: "WARNING"
+  };
+
+  // Update values
+  document.getElementById("timestamp").textContent = data.timestamp;
+  document.getElementById("magnitude").textContent = data.magnitude;
+  document.getElementById("vibrationStatus").textContent = data.status;
+
+  // Change color based on status
+  const statusEl = document.getElementById("vibrationStatus");
+
+  if (data.status === "NORMAL") {
+    statusEl.style.color = "#16a34a"; // green
+  } else if (data.status === "WARNING") {
+    statusEl.style.color = "#ca8a04"; // yellow
+  } else if (data.status === "DANGER") {
+    statusEl.style.color = "#dc2626"; // red
+  }
+</script>
 </body>
 </html>

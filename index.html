@@ -1,134 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>VibeAlert Device Monitoring</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBE ALERT – Real-Time Monitoring</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #dbeafe, #bfdbfe);
+}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background-color: #f4f6f8;
-      color: #333;
-    }
+header {
+    padding: 18px 30px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: white;
+    background: linear-gradient(270deg, #0a1f44, #123a7a, #0a1f44);
+    background-size: 400% 400%;
+    animation: headerMove 8s ease infinite;
+    letter-spacing: 1px;
+}
 
-    header {
-      background-color: #1e293b;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
+@keyframes headerMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-    main {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
+.container {
+    padding: 30px;
+    max-width: 1400px;
+    margin: auto;
+}
 
-    section {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
+.panel {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
 
-    h2 {
-      margin-top: 0;
-      color: #1e293b;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 8px;
-    }
+.panel h2 {
+    margin-top: 0;
+    font-family: 'Roboto', sans-serif;
+}
 
-    .data-value {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #2563eb;
-    }
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
 
-    .status {
-      font-size: 1.4rem;
-      font-weight: bold;
-    }
+.stat-box {
+    background: #eff6ff;
+    border-radius: 10px;
+    padding: 15px;
+}
 
-    .map-container {
-      width: 100%;
-      height: 350px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
+.stat-label {
+    font-size: 13px;
+    color: #475569;
+}
 
-    footer {
-      text-align: center;
-      padding: 15px;
-      color: #6b7280;
-      font-size: 0.9rem;
-    }
-  </style>
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+canvas {
+    max-height: 420px;
+}
+
+.timestamp {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-top: 10px;
+}
+
+.device-info {
+    font-size: 16px;
+    line-height: 1.5;
+}
+</style>
 </head>
-
 <body>
 
-  <header>
-    <h1>VibeAlert Device Monitoring System</h1>
-    <p>Real-time vibration monitoring dashboard</p>
-  </header>
+<header>
+VIBE ALERT — Real-Time Structural Vibration Monitoring
+</header>
 
-  <main>
+<div class="container">
 
-    <section>
-      <h2>About the Device</h2>
-      <p>
-        VibeAlert is a vibration monitoring system designed to detect,
-        analyze, and report vibration activity in real time.
-      </p>
-    </section>
+    <!-- LIVE SIGNAL SUMMARY -->
+    <div class="panel">
+        <h2>Live Signal Summary</h2>
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Current Magnitude</div>
+                <div id="currentVal" class="stat-value">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Maximum Recorded</div>
+                <div id="maxVal" class="stat-value">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Average Level</div>
+                <div id="avgVal" class="stat-value">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Event Count</div>
+                <div id="eventCount" class="stat-value">0</div>
+            </div>
+        </div>
 
-    <section>
-      <h2>Timestamp</h2>
-      <p id="timestamp" class="data-value">--</p>
-    </section>
+        <!-- SOLO TIMESTAMP -->
+        <div class="timestamp" id="soloTimestamp">--</div>
 
-    <section>
-      <h2>Magnitude</h2>
-      <p id="magnitude" class="data-value">--</p>
-    </section>
+        <!-- VIBRATION CHART -->
+        <canvas id="vibrationChart"></canvas>
+    </div>
 
-    <section>
-      <h2>Vibration Status</h2>
-      <p id="vibrationStatus" class="status">--</p>
-    </section>
+    <!-- DEVICE INFO / PURPOSE -->
+    <div class="panel">
+        <h2>Device Info / Purpose</h2>
+        <div class="device-info">
+            The VibeAlert system monitors structural vibrations in real-time. The Live Signal Summary displays:
+            <ul>
+                <li><strong>Current Magnitude:</strong> Latest measured vibration level.</li>
+                <li><strong>Maximum Recorded:</strong> Highest vibration detected since monitoring began.</li>
+                <li><strong>Average Level:</strong> The mean vibration over time, useful for detecting trends.</li>
+                <li><strong>Event Count:</strong> Number of times vibrations exceeded the predefined threshold.</li>
+            </ul>
+            This allows quick interpretation of vibration intensity, frequency of events, and helps in early-warning or research purposes.
+        </div>
+    </div>
 
-    <section>
-      <h2>Location</h2>
-      <div class="map-container">
-        <iframe
-          id="map"
-          src="https://www.google.com/maps?q=14.572894,121.079714&z=17&output=embed"
-          width="100%"
-          height="100%"
-          style="border:0;"
-          loading="lazy"
-          allowfullscreen>
-        </iframe>
-      </div>
-    </section>
+</div>
 
-    <section>
-      <h2>Device Info / Purpose</h2>
-      <p>
-        This device monitors vibration levels and sends alerts when
-        abnormal activity is detected. It is intended for safety,
-        monitoring, and early-warning applications.
-      </p>
-    </section>
+<script>
+const ctx = document.getElementById('vibrationChart');
 
-  </main>
+let timeData = [];
+let vibrationData = [];
+let eventCounter = 0;
+let threshold = 5;
 
-  <footer>
-    © 2026 VibeAlert Monitoring System
-  </footer>
+// Update stats and timestamp
+function calculateStats(){
+    if(vibrationData.length === 0) return;
+    const current = vibrationData[vibrationData.length - 1];
+    const max = Math.max(...vibrationData);
+    const avg = vibrationData.reduce((a,b)=>a+b,0)/vibrationData.length;
 
-  <script src="index.js"></script>
+    document.getElementById('currentVal').textContent = current.toFixed(2);
+    document.getElementById('maxVal').textContent = max.toFixed(2);
+    document.getElementById('avgVal').textContent = avg.toFixed(2);
+    document.getElementById('eventCount').textContent = eventCounter;
+
+    const now = new Date();
+    document.getElementById('soloTimestamp').textContent = now.toLocaleString();
+}
+
+// Chart.js initialization
+const vibrationChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: timeData,
+        datasets: [{
+            label: 'Vibration Magnitude',
+            data: vibrationData,
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.25,
+            borderColor: '#1e40af',
+            backgroundColor: 'rgba(59,130,246,0.2)'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: true },
+            annotation: { annotations: {} }
+        },
+        scales: {
+            x: {
+                ticks: { maxTicksLimit: 10 },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            }
+        }
+    }
+});
+
+function addPeakMarker(value, index){
+    vibrationChart.options.plugins.annotation.annotations['peak'+index] = {
+        type: 'point',
+        xValue: timeData[index],
+        yValue: value,
+        radius: 5
+    };
+}
+
+function addSensorReading(value){
+    const now = new Date().toLocaleTimeString();
+
+    timeData.push(now);
+    vibrationData.push(value);
+
+    if(value > threshold){
+        eventCounter++;
+        addPeakMarker(value, vibrationData.length-1);
+    }
+
+    if(timeData.length > 120){
+        timeData.shift();
+        vibrationData.shift();
+    }
+
+    vibrationChart.update();
+    calculateStats();
+}
+
+// ===== DEMO DATA — REMOVE WHEN USING REAL SENSOR =====
+setInterval(()=>{
+    const simulated = Math.random()*1.2;
+    const spike = Math.random() < 0.03 ? Math.random()*20 : 0;
+    addSensorReading(simulated + spike);
+}, 2000);
+
+</script>
 </body>
 </html>
+Sent

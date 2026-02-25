@@ -7,129 +7,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 <style>
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #dbeafe, #bfdbfe);
-}
-
-header {
-    padding: 18px 30px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 900;
-    font-size: 26px;
-    color: white;
-    background: linear-gradient(270deg, #0a1f44, #123a7a, #0a1f44);
-    background-size: 400% 400%;
-    animation: headerMove 8s ease infinite;
-    letter-spacing: 1px;
-}
-
-@keyframes headerMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.container {
-    padding: 30px;
-    max-width: 1400px;
-    margin: auto;
-}
-
-.panel {
-    background: white;
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 25px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-}
-
-.panel h2 {
-    margin-top: 0;
-    font-family: 'Roboto', sans-serif;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.stat-box {
-    background: #eff6ff;
-    border-radius: 10px;
-    padding: 15px;
-}
-
-.stat-label {
-    font-size: 13px;
-    color: #475569;
-}
-
-.stat-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-canvas {
-    max-height: 420px;
-}
-
-.timestamp {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1e3a8a;
-    margin-top: 10px;
-}
-
-.device-info {
-    font-size: 16px;
-    line-height: 1.5;
-}
+body { margin: 0; font-family: 'Poppins', sans-serif; background: linear-gradient(180deg, #dbeafe, #bfdbfe); }
+header { padding: 18px 30px; font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 26px; color: white; background: linear-gradient(270deg, #0a1f44, #123a7a, #0a1f44); background-size: 400% 400%; animation: headerMove 8s ease infinite; letter-spacing: 1px; }
+@keyframes headerMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.container { padding: 30px; max-width: 1400px; margin: auto; }
+.panel { background: white; border-radius: 14px; padding: 24px; margin-bottom: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.panel h2 { margin-top: 0; font-family: 'Roboto', sans-serif; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.stat-box { background: #eff6ff; border-radius: 10px; padding: 15px; }
+.stat-label { font-size: 13px; color: #475569; }
+.stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
+canvas { max-height: 420px; }
+.timestamp { font-size: 20px; font-weight: 600; color: #1e3a8a; margin-top: 10px; }
+.device-info { font-size: 16px; line-height: 1.5; }
+.status-online { color: #16a34a; font-weight: 700; }
+.status-offline { color: #dc2626; font-weight: 700; }
 </style>
 </head>
 <body>
 
-<header>
-VIBE ALERT — Real-Time Structural Vibration Monitoring
-</header>
+<header>VIBE ALERT — Real-Time Structural Vibration Monitoring</header>
 
 <div class="container">
-
-    <!-- LIVE SIGNAL SUMMARY -->
     <div class="panel">
         <h2>Live Signal Summary</h2>
         <div class="stats">
-            <div class="stat-box">
-                <div class="stat-label">Current Magnitude</div>
-                <div id="currentVal" class="stat-value">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Maximum Recorded</div>
-                <div id="maxVal" class="stat-value">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Average Level</div>
-                <div id="avgVal" class="stat-value">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Event Count</div>
-                <div id="eventCount" class="stat-value">0</div>
-            </div>
+            <div class="stat-box"><div class="stat-label">Current Magnitude</div><div id="currentVal" class="stat-value">0.00</div></div>
+            <div class="stat-box"><div class="stat-label">Maximum Recorded</div><div id="maxVal" class="stat-value">0.00</div></div>
+            <div class="stat-box"><div class="stat-label">Average Level</div><div id="avgVal" class="stat-value">0.00</div></div>
+            <div class="stat-box"><div class="stat-label">Event Count</div><div id="eventCount" class="stat-value">0</div></div>
+            <div class="stat-box"><div class="stat-label">Device Status</div><div id="deviceStatus" class="stat-value status-offline">OFFLINE</div></div>
         </div>
-
-        <!-- SOLO TIMESTAMP -->
         <div class="timestamp" id="soloTimestamp">--</div>
-
-        <!-- VIBRATION CHART -->
         <canvas id="vibrationChart"></canvas>
     </div>
 
-    <!-- DEVICE INFO / PURPOSE -->
     <div class="panel">
         <h2>Device Info / Purpose</h2>
         <div class="device-info">
@@ -140,107 +54,96 @@ VIBE ALERT — Real-Time Structural Vibration Monitoring
                 <li><strong>Average Level:</strong> The mean vibration over time, useful for detecting trends.</li>
                 <li><strong>Event Count:</strong> Number of times vibrations exceeded the predefined threshold.</li>
             </ul>
-            This allows quick interpretation of vibration intensity, frequency of events, and helps in early-warning or research purposes.
+            Device online/offline status updates automatically based on the last reading timestamp. Threshold readings are highlighted in the chart.
         </div>
     </div>
-
 </div>
 
-<script>
-const ctx = document.getElementById('vibrationChart');
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://vibe-alert-4e3ae-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const readingsRef = ref(db, "sensor-readings"); 
 
 let timeData = [];
 let vibrationData = [];
-let eventCounter = 0;
 let threshold = 5;
+let eventCounter = 0;
+let lastTimestamp = 0;
 
-// Update stats and timestamp
-function calculateStats(){
-    if(vibrationData.length === 0) return;
-    const current = vibrationData[vibrationData.length - 1];
-    const max = Math.max(...vibrationData);
-    const avg = vibrationData.reduce((a,b)=>a+b,0)/vibrationData.length;
-
-    document.getElementById('currentVal').textContent = current.toFixed(2);
-    document.getElementById('maxVal').textContent = max.toFixed(2);
-    document.getElementById('avgVal').textContent = avg.toFixed(2);
-    document.getElementById('eventCount').textContent = eventCounter;
-
-    const now = new Date();
-    document.getElementById('soloTimestamp').textContent = now.toLocaleString();
-}
-
-// Chart.js initialization
+const ctx = document.getElementById("vibrationChart").getContext("2d");
 const vibrationChart = new Chart(ctx, {
     type: 'line',
-    data: {
-        labels: timeData,
-        datasets: [{
-            label: 'Vibration Magnitude',
-            data: vibrationData,
-            borderWidth: 2,
-            pointRadius: 0,
-            tension: 0.25,
-            borderColor: '#1e40af',
-            backgroundColor: 'rgba(59,130,246,0.2)'
-        }]
-    },
+    data: { labels: timeData, datasets: [{ label: "Vibration Magnitude", data: vibrationData, borderColor: "#2563eb", backgroundColor: "rgba(37, 99, 235, 0.2)", fill: true, tension: 0.2 }] },
     options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: { display: true },
+            zoom: { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }, pan: { enabled: true, mode: 'x' } },
             annotation: { annotations: {} }
         },
         scales: {
-            x: {
-                ticks: { maxTicksLimit: 10 },
-                grid: { color: 'rgba(0,0,0,0.05)' }
-            },
-            y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(0,0,0,0.05)' }
-            }
+            x: { title: { display: true, text: "Time" } },
+            y: { title: { display: true, text: "Magnitude" }, beginAtZero: true }
         }
     }
 });
 
 function addPeakMarker(value, index){
-    vibrationChart.options.plugins.annotation.annotations['peak'+index] = {
-        type: 'point',
-        xValue: timeData[index],
-        yValue: value,
-        radius: 5
-    };
+    vibrationChart.options.plugins.annotation.annotations['peak'+index] = { type: 'point', xValue: timeData[index], yValue: value, radius: 5 };
 }
 
-function addSensorReading(value){
-    const now = new Date().toLocaleTimeString();
+function updateDashboard(magnitude, timestamp){
+    document.getElementById("currentVal").textContent = magnitude.toFixed(2);
+    document.getElementById("soloTimestamp").textContent = new Date(timestamp*1000).toLocaleString();
+    const maxVal = Math.max(...vibrationData);
+    const avgVal = vibrationData.reduce((a,b)=>a+b,0)/vibrationData.length;
+    document.getElementById("maxVal").textContent = maxVal.toFixed(2);
+    document.getElementById("avgVal").textContent = avgVal.toFixed(2);
+    document.getElementById("eventCount").textContent = eventCounter;
 
-    timeData.push(now);
-    vibrationData.push(value);
+    // Device status based on last timestamp
+    const nowSec = Math.floor(Date.now()/1000);
+    const statusEl = document.getElementById("deviceStatus");
+    statusEl.textContent = (nowSec - timestamp < 10) ? "ONLINE" : "OFFLINE";
+    statusEl.className = (nowSec - timestamp < 10) ? "stat-value status-online" : "stat-value status-offline";
+}
 
-    if(value > threshold){
-        eventCounter++;
-        addPeakMarker(value, vibrationData.length-1);
-    }
+onValue(readingsRef, snapshot => {
+    const data = snapshot.val();
+    if(!data) return;
 
-    if(timeData.length > 120){
-        timeData.shift();
-        vibrationData.shift();
-    }
+    const timestamps = Object.keys(data).sort();
+    timestamps.forEach(ts => {
+        const value = data[ts].magnitude;
+        if(!timeData.includes(ts)){
+            timeData.push(ts);
+            vibrationData.push(value);
+            if(value > threshold){ eventCounter++; addPeakMarker(value, timeData.length-1); }
+        }
+    });
 
+    const lastTs = timestamps[timestamps.length-1];
+    lastTimestamp = parseInt(lastTs);
+    vibrationChart.data.labels = timeData.map(ts => new Date(ts*1000).toLocaleTimeString());
+    vibrationChart.data.datasets[0].data = vibrationData;
     vibrationChart.update();
-    calculateStats();
-}
 
-// ===== DEMO DATA — REMOVE WHEN USING REAL SENSOR =====
-setInterval(()=>{
-    const simulated = Math.random()*1.2;
-    const spike = Math.random() < 0.03 ? Math.random()*20 : 0;
-    addSensorReading(simulated + spike);
-}, 2000);
-
+    updateDashboard(data[lastTs].magnitude, parseInt(lastTs));
+});
 </script>
 </body>
 </html>

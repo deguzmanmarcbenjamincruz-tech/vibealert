@@ -3,60 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>VIBE ALERT – Real-Time Monitoring</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
 <style>
-body { margin: 0; font-family: 'Poppins', sans-serif; background: linear-gradient(180deg, #dbeafe, #bfdbfe); }
-header { padding: 18px 30px; font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 26px; color: white; background: linear-gradient(270deg, #0a1f44, #123a7a, #0a1f44); background-size: 400% 400%; animation: headerMove 8s ease infinite; letter-spacing: 1px; }
-@keyframes headerMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.container { padding: 30px; max-width: 1400px; margin: auto; }
-.panel { background: white; border-radius: 14px; padding: 24px; margin-bottom: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
-.panel h2 { margin-top: 0; font-family: 'Roboto', sans-serif; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-.stat-box { background: #eff6ff; border-radius: 10px; padding: 15px; }
-.stat-label { font-size: 13px; color: #475569; }
-.stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
-canvas { max-height: 420px; }
-.timestamp { font-size: 20px; font-weight: 600; color: #1e3a8a; margin-top: 10px; }
-.device-info { font-size: 16px; line-height: 1.5; }
-.status-online { color: #16a34a; font-weight: 700; }
-.status-offline { color: #dc2626; font-weight: 700; }
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(180deg,#30578a,#092951);
+}
+header{
+  padding:18px 30px;
+  font-family:'Roboto',sans-serif;
+  font-weight:900;
+  font-size:26px;
+  color:white;
+  background:linear-gradient(270deg,#0a1f44,#123a7a,#0a1f44);
+  background-size:400% 400%;
+  animation:headerMove 8s ease infinite;
+}
+@keyframes headerMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+.container{
+  padding:30px;
+  max-width:1400px;
+  margin:auto;
+}
+.panel{
+  background:white;
+  border-radius:14px;
+  padding:24px;
+  margin-bottom:25px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+.panel h2{
+  margin-top:0;
+  font-family:'Roboto',sans-serif;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:20px;
+}
+.stat-box{
+  background:#eff6ff;
+  border-radius:10px;
+  padding:15px;
+}
+.stat-label{
+  font-size:13px;
+  color:#475569;
+}
+.stat-value{
+  font-size:24px;
+  font-weight:700;
+  color:#0f172a;
+}
+canvas{
+  max-height:420px;
+  cursor:grab;
+}
+.timestamp{
+  font-size:20px;
+  font-weight:600;
+  color:#1e3a8a;
+  margin-top:10px;
+}
+.device-info{
+  font-size:16px;
+  line-height:1.6;
+}
+.status-online{
+  color:#16a34a;
+  font-weight:700;
+}
+.status-offline{
+  color:#dc2626;
+  font-weight:700;
+}
+.live-indicator{
+  display:inline-block;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#16a34a;
+  margin-left:8px;
+  animation:blink 1s infinite;
+}
+@keyframes blink{
+  0%,50%,100%{opacity:1;}
+  25%,75%{opacity:0;}
+}
 </style>
 </head>
+
 <body>
 
 <header>VIBE ALERT — Real-Time Structural Vibration Monitoring</header>
 
 <div class="container">
-    <div class="panel">
-        <h2>Live Signal Summary</h2>
-        <div class="stats">
-            <div class="stat-box"><div class="stat-label">Current Magnitude</div><div id="currentVal" class="stat-value">0.00</div></div>
-            <div class="stat-box"><div class="stat-label">Maximum Recorded</div><div id="maxVal" class="stat-value">0.00</div></div>
-            <div class="stat-box"><div class="stat-label">Average Level</div><div id="avgVal" class="stat-value">0.00</div></div>
-            <div class="stat-box"><div class="stat-label">Event Count</div><div id="eventCount" class="stat-value">0</div></div>
-            <div class="stat-box"><div class="stat-label">Device Status</div><div id="deviceStatus" class="stat-value status-offline">OFFLINE</div></div>
-        </div>
-        <div class="timestamp" id="soloTimestamp">--</div>
-        <canvas id="vibrationChart"></canvas>
-    </div>
 
-    <div class="panel">
-        <h2>Device Info / Purpose</h2>
-        <div class="device-info">
-            The VibeAlert system monitors structural vibrations in real-time. The Live Signal Summary displays:
-            <ul>
-                <li><strong>Current Magnitude:</strong> Latest measured vibration level.</li>
-                <li><strong>Maximum Recorded:</strong> Highest vibration detected since monitoring began.</li>
-                <li><strong>Average Level:</strong> The mean vibration over time, useful for detecting trends.</li>
-                <li><strong>Event Count:</strong> Number of times vibrations exceeded the predefined threshold.</li>
-            </ul>
-            Device online/offline status updates automatically based on the last reading timestamp. Threshold readings are highlighted in the chart.
-        </div>
-    </div>
+<div class="panel">
+<h2>Live Signal Summary <span id="liveDot" class="live-indicator" style="display:none;"></span></h2>
+
+<div class="stats">
+  <div class="stat-box">
+    <div class="stat-label">Current Magnitude</div>
+    <div id="currentVal" class="stat-value">0.00</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Maximum Recorded</div>
+    <div id="maxVal" class="stat-value">0.00</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Average Level</div>
+    <div id="avgVal" class="stat-value">0.00</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Event Count</div>
+    <div id="eventCount" class="stat-value">0</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Device Status</div>
+    <div id="deviceStatus" class="stat-value status-offline">OFFLINE</div>
+  </div>
+</div>
+
+<div class="timestamp" id="soloTimestamp">--</div>
+<canvas id="vibrationChart"></canvas>
+</div>
+
+<div class="panel">
+<h2>Device Info / Purpose</h2>
+<div class="device-info">
+The VibeAlert system monitors structural vibrations in real-time.
+<ul>
+<li><strong>Current Magnitude:</strong> Latest measured vibration level.</li>
+<li><strong>Maximum Recorded:</strong> Highest vibration detected since monitoring began.</li>
+<li><strong>Average Level:</strong> Mean vibration over time.</li>
+<li><strong>Event Count:</strong> Number of threshold exceedances.</li>
+</ul>
+Device online/offline status updates automatically based on the last reading timestamp.
+</div>
+</div>
+
 </div>
 
 <script type="module">
@@ -64,86 +164,142 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebas
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://vibe-alert-4e3ae-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APP_ID"
+  apiKey:"AIzaSyD-eYK24WNgpPLJ0S1H9RHd87Q6925I0pY",
+  authDomain:"vibe-alert-4e3ae.firebaseapp.com",
+  databaseURL:"https://vibe-alert-4e3ae-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"vibe-alert-4e3ae",
+  storageBucket:"vibe-alert-4e3ae.firebasestorage.app",
+  messagingSenderId:"184035333126",
+  appId:"1:184035333126:web:e2d9b92367bb8c00581f87"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const readingsRef = ref(db, "sensor-readings"); 
+const readingsRef = ref(db,"sensor-readings");
 
-let timeData = [];
-let vibrationData = [];
-let threshold = 5;
-let eventCounter = 0;
-let lastTimestamp = 0;
+let timeData=[];
+let vibrationData=[];
+let threshold=5;
+let eventCounter=0;
 
-const ctx = document.getElementById("vibrationChart").getContext("2d");
-const vibrationChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels: timeData, datasets: [{ label: "Vibration Magnitude", data: vibrationData, borderColor: "#2563eb", backgroundColor: "rgba(37, 99, 235, 0.2)", fill: true, tension: 0.2 }] },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: true },
-            zoom: { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }, pan: { enabled: true, mode: 'x' } },
-            annotation: { annotations: {} }
-        },
-        scales: {
-            x: { title: { display: true, text: "Time" } },
-            y: { title: { display: true, text: "Magnitude" }, beginAtZero: true }
-        }
+const ctx=document.getElementById("vibrationChart").getContext("2d");
+
+const vibrationChart=new Chart(ctx,{
+  type:'line',
+  data:{
+    labels:timeData,
+    datasets:[{
+      label:"Vibration Magnitude",
+      data:vibrationData,
+      borderColor:"#2563eb",
+      backgroundColor:"rgba(37,99,235,0.2)",
+      fill:true,
+      tension:0.2
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:true},
+      zoom:{
+        pan:{enabled:true, mode:'x', threshold:10},
+        zoom:{wheel:{enabled:true}, pinch:{enabled:true}, mode:'x'},
+        limits:{x:{min:'original', max:'original'}}
+      },
+      annotation:{annotations:{}}
+    },
+    interaction:{intersect:false, mode:'index'},
+    scales:{
+      x:{title:{display:true,text:"Date / Time"}},
+      y:{title:{display:true,text:"Magnitude"},beginAtZero:true}
     }
+  }
 });
 
-function addPeakMarker(value, index){
-    vibrationChart.options.plugins.annotation.annotations['peak'+index] = { type: 'point', xValue: timeData[index], yValue: value, radius: 5 };
+// format timestamp
+function formatPH(ts){
+  const date = new Date(Number(ts));
+  if(isNaN(date.getTime())) return "--";
+  return date.toLocaleString("en-PH", {
+    timeZone:"Asia/Manila",
+    month:"short",
+    day:"numeric",
+    hour:"2-digit",
+    minute:"2-digit",
+    second:"2-digit"
+  });
 }
 
-function updateDashboard(magnitude, timestamp){
-    document.getElementById("currentVal").textContent = magnitude.toFixed(2);
-    document.getElementById("soloTimestamp").textContent = new Date(timestamp*1000).toLocaleString();
-    const maxVal = Math.max(...vibrationData);
-    const avgVal = vibrationData.reduce((a,b)=>a+b,0)/vibrationData.length;
-    document.getElementById("maxVal").textContent = maxVal.toFixed(2);
-    document.getElementById("avgVal").textContent = avgVal.toFixed(2);
-    document.getElementById("eventCount").textContent = eventCounter;
+function updateDashboard(magnitude,timestamp){
+  document.getElementById("currentVal").textContent=magnitude.toFixed(2);
+  document.getElementById("soloTimestamp").textContent=formatPH(timestamp);
 
-    // Device status based on last timestamp
-    const nowSec = Math.floor(Date.now()/1000);
-    const statusEl = document.getElementById("deviceStatus");
-    statusEl.textContent = (nowSec - timestamp < 10) ? "ONLINE" : "OFFLINE";
-    statusEl.className = (nowSec - timestamp < 10) ? "stat-value status-online" : "stat-value status-offline";
+  const maxVal = vibrationData.length ? Math.max(...vibrationData) : 0;
+  const avgVal = vibrationData.length ? vibrationData.reduce((a,b)=>a+b,0)/vibrationData.length : 0;
+
+  document.getElementById("maxVal").textContent = maxVal.toFixed(2);
+  document.getElementById("avgVal").textContent = avgVal.toFixed(2);
+  document.getElementById("eventCount").textContent = eventCounter;
+
+  const now = Date.now();
+  const lastTime = Number(timestamp);
+  const statusEl = document.getElementById("deviceStatus");
+  const liveDot = document.getElementById("liveDot");
+
+  if(!isNaN(lastTime) && (now - lastTime < 60000)){
+    statusEl.textContent="ONLINE";
+    statusEl.className="stat-value status-online";
+    liveDot.style.display="inline-block";
+  } else {
+    statusEl.textContent="OFFLINE";
+    statusEl.className="stat-value status-offline";
+    liveDot.style.display="none";
+  }
 }
 
-onValue(readingsRef, snapshot => {
-    const data = snapshot.val();
-    if(!data) return;
+// peak marker
+function addPeakMarker(value,index){
+  vibrationChart.options.plugins.annotation.annotations['peak'+index]={
+    type:'point',
+    xValue:timeData[index],
+    yValue:value,
+    radius:5
+  };
+}
 
-    const timestamps = Object.keys(data).sort();
-    timestamps.forEach(ts => {
-        const value = data[ts].magnitude;
-        if(!timeData.includes(ts)){
-            timeData.push(ts);
-            vibrationData.push(value);
-            if(value > threshold){ eventCounter++; addPeakMarker(value, timeData.length-1); }
-        }
-    });
+onValue(readingsRef,(snapshot)=>{
+  const data = snapshot.val();
+  if(!data) return;
 
-    const lastTs = timestamps[timestamps.length-1];
-    lastTimestamp = parseInt(lastTs);
-    vibrationChart.data.labels = timeData.map(ts => new Date(ts*1000).toLocaleTimeString());
-    vibrationChart.data.datasets[0].data = vibrationData;
-    vibrationChart.update();
+  const timestamps = Object.keys(data).sort((a,b)=>Number(a)-Number(b));
 
-    updateDashboard(data[lastTs].magnitude, parseInt(lastTs));
+  timestamps.forEach(ts=>{
+    const magnitude = Number(data[ts]?.magnitude);
+    if(!timeData.includes(ts) && !isNaN(magnitude)){
+      timeData.push(ts);
+      vibrationData.push(magnitude);
+      if(magnitude > threshold){ 
+        eventCounter++; 
+        addPeakMarker(magnitude, timeData.length-1); 
+      }
+    }
+  });
+
+  const lastTs = timestamps[timestamps.length-1];
+  updateDashboard(Number(data[lastTs]?.magnitude)||0, lastTs);
+
+  vibrationChart.data.labels = timeData.map(ts => formatPH(ts));
+  vibrationChart.data.datasets[0].data = vibrationData;
+  vibrationChart.update();
+
+  // auto scroll to latest
+  if(timeData.length>20){ // show last 20 points
+    vibrationChart.options.scales.x.min = timeData.length-20;
+    vibrationChart.options.scales.x.max = timeData.length-1;
+  }
 });
+
 </script>
 </body>
 </html>
